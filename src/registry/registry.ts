@@ -28,7 +28,9 @@ export async function launchRegistry() {
   // Implement the register node route
   _registry.post("/registerNode", (req, res) => {
     const { nodeId, pubKey } = req.body as RegisterNodeBody;
-    nodes.push({ nodeId, pubKey });
+    if (!nodes.find(node => node.nodeId === nodeId)) {
+      nodes.push({ nodeId, pubKey });
+    }
     res.send("success");
   });
 

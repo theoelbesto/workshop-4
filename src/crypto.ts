@@ -156,7 +156,7 @@ export async function importSymKey(
     "raw",
     buffer,
     {
-      name: "AES-GCM",
+      name: "AES-CBC",
     },
     true,
     ["encrypt", "decrypt"]
@@ -169,10 +169,10 @@ export async function symEncrypt(
   data: string
 ): Promise<string> {
   const encoded = new TextEncoder().encode(data);
-  const iv = webcrypto.getRandomValues(new Uint8Array(12));
+  const iv = webcrypto.getRandomValues(new Uint8Array(16));
   const encrypted = await webcrypto.subtle.encrypt(
     {
-      name: "AES-GCM",
+      name: "AES-CBC",
       iv: iv,
     },
     key,
@@ -187,11 +187,11 @@ export async function symDecrypt(
   encryptedData: string
 ): Promise<string> {
   const key = await importSymKey(strKey);
-  const iv = base64ToArrayBuffer(encryptedData.slice(0, 16));
-  const data = base64ToArrayBuffer(encryptedData.slice(16));
+  const iv = base64ToArrayBuffer(encryptedData.slice(0, 24));
+  const data = base64ToArrayBuffer(encryptedData.slice(24));
   const decrypted = await webcrypto.subtle.decrypt(
     {
-      name: "AES-GCM",
+      name: "AES-CBC",
       iv: iv,
     },
     key,
